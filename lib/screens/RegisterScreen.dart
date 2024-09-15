@@ -1,3 +1,5 @@
+import 'package:app_humor/data/dados_humor.dart';
+import 'package:app_humor/model/humor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -14,14 +16,17 @@ class _RegisterscreenState extends State<Registerscreen> {
   final _formKey = GlobalKey<FormState>();
   DateTime? _selectedDate;
   String formattedDate = '';
-   String? _selectedEmoji;
-   String _emojiDescription = '';
+  String? _selectedEmoji;
+  String _emojiDescription = '';
+  String _descricao = '';
+  DateTime _data = DateTime.now();
+  String _id = DateTime.now().toIso8601String();
 
-   final Map<String, String> _emojiDescriptions = {
+  final Map<String, String> _emojiDescriptions = {
     '😀': 'Feliz',
-    '😪': 'Mais ou Menos',
+    '😪': 'pensativo',
     '😔': 'Triste',
-    '😠': 'Com Raiva'
+    '😠': 'Raiva'
   };
 
   @override
@@ -34,13 +39,15 @@ class _RegisterscreenState extends State<Registerscreen> {
   Future<void> _initializeDateFormatting() async {
     await initializeDateFormatting('pt_BR', null);
     setState(() {
-      formattedDate = getFormattedDate(); // Atualiza a data formatada depois da inicialização
+      formattedDate =
+          getFormattedDate(); // Atualiza a data formatada depois da inicialização
     });
   }
 
   String getFormattedDate() {
     DateTime now = DateTime.now();
-    return DateFormat('EEE d MMM', 'pt_BR').format(now); // 'EEE' para dia da semana, 'd' para dia, 'MMM' para mês
+    return DateFormat('EEE d MMM', 'pt_BR')
+        .format(now); // 'EEE' para dia da semana, 'd' para dia, 'MMM' para mês
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -54,6 +61,8 @@ class _RegisterscreenState extends State<Registerscreen> {
     if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
         _selectedDate = pickedDate;
+        formattedDate = DateFormat('EEE d MMM', 'pt_BR').format(_selectedDate!);
+        _data = pickedDate;
       });
     }
   }
@@ -65,19 +74,29 @@ class _RegisterscreenState extends State<Registerscreen> {
     });
   }
 
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      addHumor(_id, _emojiDescription, _descricao, _data);
+      Navigator.pop(context, true);
+          // Voltar para a tela anterior após salvar
+    }
+  }
+
+  void addHumor(String id, String emocao, String descricao, DateTime data) {
+    final newHumor = Humor(
+      id: id,
+      emocao: emocao,
+      descricao: descricao,
+      data: data,
+    );
+    dados_Humor.add(newHumor);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          TextButton(
-              onPressed: () {},
-              child: Text(
-                'Salvar',
-                style: TextStyle(fontSize: 20),
-              ))
-        ],
-      ),
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -90,6 +109,9 @@ class _RegisterscreenState extends State<Registerscreen> {
                       Text(
                         'Como vc está?',
                         style: TextStyle(fontSize: 33),
+                      ),
+                      SizedBox(
+                        height: 50,
                       ),
                       Form(
                         key: _formKey,
@@ -109,35 +131,59 @@ class _RegisterscreenState extends State<Registerscreen> {
                                 ),
                               ],
                             ),
+                            SizedBox(
+                              height: 20,
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _buildEmojiButton('😀'),
-                              _buildEmojiButton('😪'),
-                              _buildEmojiButton('😔'),
-                              _buildEmojiButton('😠'),
-                              // Adicione mais emojis conforme necessário
-                            ],
-                          ),
-                          if (_selectedEmoji != null) 
-                             Column(
                               children: [
-                                Text(
-                                  'Emoji selecionado: $_selectedEmoji',
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                                Text(
-                                  'Descrição: $_emojiDescription',
-                                  style: TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
-                                ),
+                                _buildEmojiButton('😀'),
+                                _buildEmojiButton('😪'),
+                                _buildEmojiButton('😔'),
+                                _buildEmojiButton('😠'),
+                                // Adicione mais emojis conforme necessário
                               ],
                             ),
-                            SizedBox(height: 30,),
-                            TextFormField(
-                              decoration: InputDecoration(
-                                hintText: 'Descreva seu dia'
+                            if (_selectedEmoji != null)
+                              Column(
+                                children: [
+                                  Text(
+                                    'Emoji selecionado: $_selectedEmoji',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  Text(
+                                    'Descrição: $_emojiDescription',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontStyle: FontStyle.italic),
+                                  ),
+                                ],
                               ),
-                            )
+                            SizedBox(
+                              height: 50,
+                            ),
+                            TextFormField(
+                              decoration:
+                                  InputDecoration(hintText: 'Descreva seu dia'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Por favor, insira uma descrição.';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _descricao = value!;
+                              },
+                            ),
+                            SizedBox(
+                              height: 50,
+                            ),
+                            TextButton(
+                                onPressed: () => _submitForm(),
+                                child: Text(
+                                  'Salvar',
+                                  style: TextStyle(fontSize: 25),
+                                ))
                           ],
                         ),
                       )
@@ -150,9 +196,7 @@ class _RegisterscreenState extends State<Registerscreen> {
     );
   }
 
-  
   Widget _buildEmojiButton(String emoji) {
-    // bool isSelected = _selectedEmoji == emoji;
     return IconButton(
       icon: Text(
         emoji,
