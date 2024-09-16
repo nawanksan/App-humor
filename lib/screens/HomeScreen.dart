@@ -19,8 +19,7 @@ class _HomescreenState extends State<Homescreen> {
   @override
   void initState() {
     super.initState();
-    _humores = List.from(dados_Humor);
-    verificarCadastroHumor();
+    _refreshHumores();
   }
 
   void _refreshHumores() {
@@ -33,18 +32,40 @@ class _HomescreenState extends State<Homescreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // drawer: Drawer(),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue.shade100,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.people_sharp),
+                  Text('Perfis'),
+                ],
+              ),
+            ),
+            Center(child: Text('KAWAN')),
+            Image.asset(
+              'assets/kawan.png',
+              width: 150,
+              height: 150,
+            ),
+            Center(child: Text('HERISSON')),
+            Image.asset(
+              'assets/herisson.jpg',
+              width: 150,
+              height: 150,
+            )
+          ],
+        ),
+      ),
       appBar: AppBar(
-        title: Text('Diário do humor'),
+        title: const Text('Diário do humor'),
         backgroundColor: Colors.blue[50],
-        actions: [
-          IconButton(
-            icon: Icon(Icons.people_alt_sharp),
-            onPressed: () async {
-              
-            }
-          )
-        ],
       ),
       body: ListView.builder(
         itemCount: _humores.length,
@@ -53,7 +74,7 @@ class _HomescreenState extends State<Homescreen> {
           return ListTile(
             title: Text(
               humor.icon + " " + humor.emocao,
-              style: TextStyle(fontSize: 25),
+              style: const TextStyle(fontSize: 25),
             ),
             subtitle: Text(humor.descricao),
 
@@ -82,7 +103,7 @@ class _HomescreenState extends State<Homescreen> {
     // Navega para a tela de adicionar humor e aguarda o retorno
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Registerscreen()),
+      MaterialPageRoute(builder: (context) => const Registerscreen()),
     );
 
     if (result == true) {

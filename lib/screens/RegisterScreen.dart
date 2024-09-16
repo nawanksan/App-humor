@@ -34,6 +34,7 @@ class _RegisterscreenState extends State<Registerscreen> {
   @override
   void initState() {
     super.initState();
+
     _initializeDateFormatting();
   }
 
@@ -86,12 +87,13 @@ class _RegisterscreenState extends State<Registerscreen> {
       _formKey.currentState!.save();
       addHumor(_id, _emojiDescription, _descricao, _data, _selectedEmoji!);
       Navigator.pop(context, true);
-          // Voltar para a tela anterior após salvar
+      // Voltar para a tela anterior após salvar
+      // Voltar para a tela anterior após salvar
     }
   }
 
-  //adiconando o novo humor na lista
-  void addHumor(String id, String emocao, String descricao, DateTime data, String _selectedEmoji) {
+  void addHumor(String id, String emocao, String descricao, DateTime data,
+      String _selectedEmoji) {
     final newHumor = Humor(
       id: id,
       emocao: emocao,
@@ -101,19 +103,21 @@ class _RegisterscreenState extends State<Registerscreen> {
     );
     dados_Humor.add(newHumor);
     verificarHumorDoDia();
-    
   }
 
   //salvando a data do ultimo humor cadastrado
-  Future<void> verificarHumorDoDia() async{
+  Future<void> verificarHumorDoDia() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('ultimo_cadastro', '${_data.day}-${_data.month}-${_data.year}');
+    await prefs.setString(
+        'ultimo_cadastro', '${_data.day}-${_data.month}-${_data.year}');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.blue[50],
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -180,8 +184,16 @@ class _RegisterscreenState extends State<Registerscreen> {
                               height: 50,
                             ),
                             TextFormField(
-                              decoration:
-                                  InputDecoration(hintText: 'Descreva seu dia'),
+                              cursorColor: Colors.blue,
+                              decoration: InputDecoration(
+                                hintText: 'Descreva seu dia',
+                                border: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.blue.shade50)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.blue.shade100)),
+                              ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Por favor, insira uma descrição.';
@@ -202,7 +214,8 @@ class _RegisterscreenState extends State<Registerscreen> {
                                 onPressed: () => _submitForm(),
                                 child: Text(
                                   'Salvar',
-                                  style: TextStyle(fontSize: 25),
+                                  style: TextStyle(
+                                      fontSize: 25, color: Colors.blue[200]),
                                 ))
                           ],
                         ),
@@ -227,6 +240,4 @@ class _RegisterscreenState extends State<Registerscreen> {
       onPressed: () => _selectEmoji(emoji),
     );
   }
-
-  
 }
