@@ -1,9 +1,11 @@
 import 'package:app_humor/data/dados_humor.dart';
 import 'package:app_humor/model/humor.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Registerscreen extends StatefulWidget {
   const Registerscreen({super.key});
@@ -50,6 +52,7 @@ class _RegisterscreenState extends State<Registerscreen> {
         .format(now); // 'EEE' para dia da semana, 'd' para dia, 'MMM' para mês
   }
 
+  //criando o calendario
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -58,6 +61,8 @@ class _RegisterscreenState extends State<Registerscreen> {
       lastDate: DateTime(2025),
       // locale: const Locale('pt', 'BR'),
     );
+
+    //atualizando as data selecionada e mostrar a data selecionada
     if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
         _selectedDate = pickedDate;
@@ -67,6 +72,7 @@ class _RegisterscreenState extends State<Registerscreen> {
     }
   }
 
+  //selecionando o emoji
   void _selectEmoji(String emoji) {
     setState(() {
       _selectedEmoji = emoji;
@@ -74,23 +80,34 @@ class _RegisterscreenState extends State<Registerscreen> {
     });
   }
 
+  //verificando o validator e adionando o novo humor
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      addHumor(_id, _emojiDescription, _descricao, _data);
+      addHumor(_id, _emojiDescription, _descricao, _data, _selectedEmoji!);
       Navigator.pop(context, true);
           // Voltar para a tela anterior após salvar
     }
   }
 
-  void addHumor(String id, String emocao, String descricao, DateTime data) {
+  //adiconando o novo humor na lista
+  void addHumor(String id, String emocao, String descricao, DateTime data, String _selectedEmoji) {
     final newHumor = Humor(
       id: id,
       emocao: emocao,
       descricao: descricao,
       data: data,
+      icon: _selectedEmoji,
     );
     dados_Humor.add(newHumor);
+    verificarHumorDoDia();
+    
+  }
+
+  //salvando a data do ultimo humor cadastrado
+  Future<void> verificarHumorDoDia() async{
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('ultimo_cadastro', '${_data.day}-${_data.month}-${_data.year}');
   }
 
   @override
@@ -169,6 +186,9 @@ class _RegisterscreenState extends State<Registerscreen> {
                                 if (value == null || value.isEmpty) {
                                   return 'Por favor, insira uma descrição.';
                                 }
+                                if (_selectedEmoji == null) {
+                                  return 'Por favor, escolha um emoji acima antes de cadastrar.';
+                                }
                                 return null;
                               },
                               onSaved: (value) {
@@ -207,4 +227,6 @@ class _RegisterscreenState extends State<Registerscreen> {
       onPressed: () => _selectEmoji(emoji),
     );
   }
+
+  
 }
