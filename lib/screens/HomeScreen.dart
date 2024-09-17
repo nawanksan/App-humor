@@ -1,10 +1,11 @@
 import 'package:app_humor/data/provider.dart';
+import 'package:app_humor/model/humor.dart';
+import 'package:app_humor/screens/EditScreen.dart';
 import 'package:app_humor/screens/RegisterScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Homescreen extends ConsumerStatefulWidget {
   const Homescreen({super.key});
@@ -14,18 +15,21 @@ class Homescreen extends ConsumerStatefulWidget {
 }
 
 class _HomescreenState extends ConsumerState<Homescreen> {
-
+  final hoje = DateTime.now();
+  
   @override
   void initState() {
     super.initState();
-    verificarCadastroHumorDia();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      verificarCadastroHumorDia2();
+    });
+  }
+
+  void verificarCadastroHumorDia2(){
+    verificarCadastroHumorDia(hoje);
   }
 
   Future<void> limparTodoSharedPreferences() async {
-    // final prefs = await SharedPreferences.getInstance();
-    // await prefs.clear();
-    // print("SharedPreferences limpo com sucesso!");
-    // // _refreshHumores();
     ref.read(humorProvider.notifier).clearAllHumores();
   }
 
@@ -56,12 +60,6 @@ class _HomescreenState extends ConsumerState<Homescreen> {
               width: 200,
               height: 250,
             ),
-            Center(child: Text('HERISSON')),
-            Image.asset(
-              'assets/herisson.jpg',
-              width: 200,
-              height: 250,
-            )
           ],
         ),
       ),
@@ -135,10 +133,18 @@ class _HomescreenState extends ConsumerState<Homescreen> {
               style: const TextStyle(fontSize: 25),
             ),
             subtitle: Text(humor.descricao),
+            trailing: Text(formatDate(humor.data) + " \nClique para editar"),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => Editscreen(humor: humor),
+                ),
+              );
+            },
 
-            trailing:
-                Text(formatDate(humor.data)), // Formata a data para exibição
+            // Formata a data para exibição
           );
+          
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -176,17 +182,24 @@ class _HomescreenState extends ConsumerState<Homescreen> {
   // }
 
   // Verifica se o humor foi cadastrado hoje
-  Future<void> verificarCadastroHumorDia() async {
-    final prefs = await SharedPreferences.getInstance();
-    final hoje = DateTime.now();
-    final ultimoCadastro = prefs.getString('ultimo_cadastro') ?? '';
+  Future<void> verificarCadastroHumorDia(DateTime data) async {
+  // Obtendo a lista de humores do humorProvider
+  final humores = ref.read(humorProvider);
 
-    // Se não cadastrou o humor hoje, mostre um alerta
-    if (ultimoCadastro != '${hoje.day}-${hoje.month}-${hoje.year}') {
-      mostrarAlertaCadastrarHumor();
-    }
+  // Filtrando a lista de humores para encontrar um humor com a mesma data
+  final humorDoDia = humores.firstWhere(
+    (humor) =>
+        humor.data.day == data.day &&
+        humor.data.month == data.month &&
+        humor.data.year == data.year,
+    orElse: () => Humor(id: '', emocao: '', descricao: '', data: DateTime.now(), icon: ''), // Retorna um humor "vazio",
+  );
+
+  // Se não encontrar nenhum humor com a data especificada, mostrar o alerta
+  if (humorDoDia.id.isEmpty) {
+    mostrarAlertaCadastrarHumor();
   }
-
+}
   void mostrarAlertaCadastrarHumor() {
     showCupertinoDialog(
       context: context,

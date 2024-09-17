@@ -7,16 +7,16 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class Registerscreen extends ConsumerStatefulWidget {
-  const Registerscreen({super.key});
+class Editscreen extends ConsumerStatefulWidget {
+  final Humor humor; 
+  Editscreen({Key? key, required this.humor}) : super(key: key);
 
   @override
-  ConsumerState<Registerscreen> createState() => _RegisterscreenState();
+  ConsumerState<Editscreen> createState() => _EditscreenState();
 }
 
-class _RegisterscreenState extends ConsumerState<Registerscreen> {
+class _EditscreenState extends ConsumerState<Editscreen> {
   final _formKey = GlobalKey<FormState>();
   DateTime? _selectedDate;
   String formattedDate = '';
@@ -36,6 +36,7 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
   void initState() {
     super.initState();
     _initializeDateFormatting();
+     _loadHumorData();// Carrega os dados do humor que está sendo editado
   }
 
   // Inicializa a formatação de data para 'pt_BR'
@@ -51,6 +52,16 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
     DateTime now = DateTime.now();
     return DateFormat('EEE d MMM', 'pt_BR')
         .format(now); // 'EEE' para dia da semana, 'd' para dia, 'MMM' para mês
+  }
+
+  void _loadHumorData() {
+    // Carrega os dados do humor existente para editar
+    _selectedDate = widget.humor.data;
+    formattedDate = DateFormat('EEE d MMM', 'pt_BR').format(_selectedDate!);
+    _selectedEmoji = widget.humor.icon;
+    _emojiDescription = widget.humor.emocao;
+    _descricao = widget.humor.descricao;
+    _data = widget.humor.data;
   }
 
   //criando o calendario
@@ -85,30 +96,33 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
    void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      final newHumor = Humor(
-        id: DateTime.now().toIso8601String(),
+
+      //atualiar o humor existente
+      final updateHumor = Humor(
+        id: widget.humor.id, // Mantém o mesmo ID,
         emocao: _emojiDescription,
         descricao: _descricao,
         data: _data,
         icon: _selectedEmoji!,
       );
-      verificarHumorDoDia();
-      ref.read(humorProvider.notifier).addHumor(newHumor);
-      Navigator.pop(context, true);
+
+      // verificarHumorDoDia();
+      ref.read(humorProvider.notifier).updateHumor(updateHumor);
+      Navigator.pop(context);
     }
   }
 
   //salvando a data do ultimo humor cadastrado
-  Future<void> verificarHumorDoDia() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('ultimo_cadastro', '${_data.day}-${_data.month}-${_data.year}');
-  }
+  // Future<void> verificarHumorDoDia() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.setString('ultimo_cadastro', '${_data.day}-${_data.month}-${_data.year}');
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cadastrar Novo Humor'),
+        title: Text('Editar Humor'),
         backgroundColor: Colors.blue[50],
       ),
       body: SingleChildScrollView(
@@ -120,10 +134,6 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
-                      Text(
-                        'Como vc está?',
-                        style: TextStyle(fontSize: 33),
-                      ),
                       SizedBox(
                         height: 50,
                       ),
@@ -177,6 +187,7 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
                               height: 50,
                             ),
                             TextFormField(
+                              initialValue: _descricao,
                               cursorColor: Colors.blue,
                               decoration: InputDecoration(
                                 hintText: 'Descreva seu dia',
