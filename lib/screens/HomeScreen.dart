@@ -1,36 +1,38 @@
-import 'package:app_humor/data/dados_humor.dart';
-import 'package:app_humor/model/humor.dart';
+import 'package:app_humor/data/provider.dart';
 import 'package:app_humor/screens/RegisterScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Homescreen extends StatefulWidget {
+class Homescreen extends ConsumerStatefulWidget {
   const Homescreen({super.key});
 
   @override
-  State<Homescreen> createState() => _HomescreenState();
+  ConsumerState<Homescreen> createState() => _HomescreenState();
 }
 
-class _HomescreenState extends State<Homescreen> {
-  List<Humor> _humores = dados_Humor;
+class _HomescreenState extends ConsumerState<Homescreen> {
 
   @override
   void initState() {
     super.initState();
-    _refreshHumores();
+    verificarCadastroHumorDia();
   }
 
-  void _refreshHumores() {
-    setState(() {
-      _humores = List.from(dados_Humor);
-      verificarCadastroHumor();
-    });
+  Future<void> limparTodoSharedPreferences() async {
+    // final prefs = await SharedPreferences.getInstance();
+    // await prefs.clear();
+    // print("SharedPreferences limpo com sucesso!");
+    // // _refreshHumores();
+    ref.read(humorProvider.notifier).clearAllHumores();
   }
 
   @override
   Widget build(BuildContext context) {
+    final humores = ref.watch(humorProvider);
+
     return Scaffold(
       drawer: Drawer(
         child: ListView(
@@ -44,21 +46,21 @@ class _HomescreenState extends State<Homescreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.people_sharp),
-                  Text('Perfis'),
+                  Text('Perfil'),
                 ],
               ),
             ),
             Center(child: Text('KAWAN')),
             Image.asset(
               'assets/kawan.png',
-              width: 150,
-              height: 150,
+              width: 200,
+              height: 250,
             ),
             Center(child: Text('HERISSON')),
             Image.asset(
               'assets/herisson.jpg',
-              width: 150,
-              height: 150,
+              width: 200,
+              height: 250,
             )
           ],
         ),
@@ -66,11 +68,67 @@ class _HomescreenState extends State<Homescreen> {
       appBar: AppBar(
         title: const Text('Diário do humor'),
         backgroundColor: Colors.blue[50],
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete_sweep),
+            onPressed: () {
+              showCupertinoDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return CupertinoAlertDialog(
+                    title: const Text(
+                      'Aviso',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+                    ),
+                    content: const Text(
+                      'Deseja apagar todos os humores cadastrados?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 17), // Centraliza o texto
+                    ),
+                    actions: <CupertinoDialogAction>[
+                      CupertinoDialogAction(
+                        onPressed: () {
+                          // Ação principal
+
+                          Navigator.of(context).pop();
+                        },
+                        // isDefaultAction: false,
+                        child: const Text(
+                          'Cancelar',
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20),
+                        ), // Destaca o botão principal
+                      ),
+                      CupertinoDialogAction(
+                        onPressed: () {
+                          // Ação principal
+                          limparTodoSharedPreferences();
+                          Navigator.of(context).pop();
+                        },
+                        // isDefaultAction: false,
+                        child: const Text(
+                          'OK',
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20),
+                        ), // Destaca o botão principal
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          )
+        ],
       ),
       body: ListView.builder(
-        itemCount: _humores.length,
+        itemCount: humores.length,
         itemBuilder: (context, index) {
-          final humor = _humores[index];
+          final humor = humores[index];
           return ListTile(
             title: Text(
               humor.icon + " " + humor.emocao,
@@ -84,7 +142,12 @@ class _HomescreenState extends State<Homescreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToAddHumor(),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Registerscreen()),
+          );
+        },
         child: Icon(
           Icons.add,
           color: Colors.black,
@@ -99,21 +162,21 @@ class _HomescreenState extends State<Homescreen> {
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
-  void _navigateToAddHumor() async {
-    // Navega para a tela de adicionar humor e aguarda o retorno
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const Registerscreen()),
-    );
+  // void _navigateToAddHumor() async {
+  //   // Navega para a tela de adicionar humor e aguarda o retorno
+  //   final result = await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => const Registerscreen()),
+  //   );
 
-    if (result == true) {
-      // Se o humor foi adicionado, atualize a lista
-      _refreshHumores();
-    }
-  }
+  //   // if (result == true) {
+  //   //   // Se o humor foi adicionado, atualize a lista
+  //   //   _refreshHumores();
+  //   // }
+  // }
 
   // Verifica se o humor foi cadastrado hoje
-  Future<void> verificarCadastroHumor() async {
+  Future<void> verificarCadastroHumorDia() async {
     final prefs = await SharedPreferences.getInstance();
     final hoje = DateTime.now();
     final ultimoCadastro = prefs.getString('ultimo_cadastro') ?? '';

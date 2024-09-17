@@ -1,4 +1,4 @@
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'dart:convert';
 
 class Humor {
   final String id;
@@ -12,19 +12,28 @@ class Humor {
     required this.emocao,
     required this.descricao,
     required this.data,
-    required this.icon
+    required this.icon,
   });
+
+  // Converte Humor para Map (JSON)
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'emocao': emocao,
+      'descricao': descricao,
+      'data': data.toIso8601String(), // Converte DateTime para String
+      'icon': icon,
+    };
+  }
+
+  // Cria Humor a partir de Map (JSON)
+  factory Humor.fromJson(Map<String, dynamic> json) {
+    return Humor(
+      id: json['id'],
+      emocao: json['emocao'],
+      descricao: json['descricao'],
+      data: DateTime.parse(json['data']), // Converte String para DateTime
+      icon: json['icon'],
+    );
+  }
 }
-
-// class HumorNotifier extends StateNotifier<List<Humor>> {
-//   HumorNotifier() : super([]);
-
-//   void addHumor(Humor humor) {
-//     state = [...state, humor];
-//   }
-// }
-
-// // Provider que expõe o HumorNotifier
-// final humorProvider = StateNotifierProvider<HumorNotifier, List<Humor>>((ref) {
-//   return HumorNotifier();
-// });

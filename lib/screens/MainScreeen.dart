@@ -10,17 +10,17 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int selecionarIndex = 0;
+  int selectedIndex = 0;
 
   // Lista de telas que serão chamadas ao selecionar o item no BottomNavigationBar
-  static List<Widget> _widgetOptions = <Widget>[
-    Homescreen(),
-    Reportscreen(),
+  List<Widget> _widgetOptions = <Widget>[
+    const Homescreen(),
+    const Reportscreen(),
   ];
   //metodo que muda o indice quando um botão for clicado
   void onitemSelected(int index) {
     setState(() {
-      selecionarIndex = index;
+      selectedIndex = index;
     });
   }
 
@@ -28,13 +28,13 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       
-      body: _widgetOptions.elementAt(selecionarIndex),
+      body: _widgetOptions.elementAt(selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home, size: 35,), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.auto_graph_outlined, size: 35,), label: ''),
         ],
-        currentIndex: selecionarIndex,
+        currentIndex: selectedIndex,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.black,
         onTap: onitemSelected,

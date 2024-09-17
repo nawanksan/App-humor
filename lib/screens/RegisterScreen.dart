@@ -1,20 +1,22 @@
-import 'package:app_humor/data/dados_humor.dart';
+
+import 'package:app_humor/data/provider.dart';
 import 'package:app_humor/model/humor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Registerscreen extends StatefulWidget {
+class Registerscreen extends ConsumerStatefulWidget {
   const Registerscreen({super.key});
 
   @override
-  State<Registerscreen> createState() => _RegisterscreenState();
+  ConsumerState<Registerscreen> createState() => _RegisterscreenState();
 }
 
-class _RegisterscreenState extends State<Registerscreen> {
+class _RegisterscreenState extends ConsumerState<Registerscreen> {
   final _formKey = GlobalKey<FormState>();
   DateTime? _selectedDate;
   String formattedDate = '';
@@ -34,7 +36,6 @@ class _RegisterscreenState extends State<Registerscreen> {
   @override
   void initState() {
     super.initState();
-
     _initializeDateFormatting();
   }
 
@@ -82,34 +83,69 @@ class _RegisterscreenState extends State<Registerscreen> {
   }
 
   //verificando o validator e adionando o novo humor
-  void _submitForm() {
+   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      addHumor(_id, _emojiDescription, _descricao, _data, _selectedEmoji!);
+      final newHumor = Humor(
+        id: DateTime.now().toIso8601String(),
+        emocao: _emojiDescription,
+        descricao: _descricao,
+        data: _data,
+        icon: _selectedEmoji!,
+      );
+      verificarHumorDoDia();
+      ref.read(humorProvider.notifier).addHumor(newHumor);
       Navigator.pop(context, true);
-      // Voltar para a tela anterior após salvar
-      // Voltar para a tela anterior após salvar
     }
   }
 
-  void addHumor(String id, String emocao, String descricao, DateTime data,
-      String _selectedEmoji) {
-    final newHumor = Humor(
-      id: id,
-      emocao: emocao,
-      descricao: descricao,
-      data: data,
-      icon: _selectedEmoji,
-    );
-    dados_Humor.add(newHumor);
-    verificarHumorDoDia();
-  }
+  //verificando o validator e adionando o novo humor
+  // void _submitForm() {
+  //   if (_formKey.currentState!.validate()) {
+  //     _formKey.currentState!.save();
+  //     addHumor(_id, _emojiDescription, _descricao, _data, _selectedEmoji!);
+  //     Navigator.pop(context);
+  //     // Voltar para a tela anterior após salvar
+  //     // Voltar para a tela anterior após salvar
+  //   }
+  // }
+
+  // void addHumor(String id, String emocao, String descricao, DateTime data,
+  //     String _selectedEmoji) async {
+  //   final newHumor = Humor(
+  //     id: id,
+  //     emocao: emocao,
+  //     descricao: descricao,
+  //     data: data,
+  //     icon: _selectedEmoji,
+  //   );
+
+  //   final prefs = await SharedPreferences.getInstance();
+
+  //   // Recupera a lista de humores existente
+  //   List<String>? humorListJson = prefs.getStringList('humores');
+  //   if (humorListJson == null) {
+  //     humorListJson = [];
+  //   }
+
+  //   // Adiciona o novo humor à lista
+  //   humorListJson.add(jsonEncode(newHumor.toJson()));
+
+  //   // Salva a lista atualizada no SharedPreferences
+  //   await prefs.setStringList('humores', humorListJson);
+
+  //   // Atualiza a data do último humor registrado
+  //   await verificarHumorDoDia();
+
+
+  //   // dados_Humor.add(newHumor);
+  //   verificarHumorDoDia();
+  // }
 
   //salvando a data do ultimo humor cadastrado
   Future<void> verificarHumorDoDia() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
-        'ultimo_cadastro', '${_data.day}-${_data.month}-${_data.year}');
+    await prefs.setString('ultimo_cadastro', '${_data.day}-${_data.month}-${_data.year}');
   }
 
   @override
@@ -191,8 +227,8 @@ class _RegisterscreenState extends State<Registerscreen> {
                                     borderSide:
                                         BorderSide(color: Colors.blue.shade50)),
                                 focusedBorder: OutlineInputBorder(
-                                    borderSide:
-                                        BorderSide(color: Colors.blue.shade100)),
+                                    borderSide: BorderSide(
+                                        color: Colors.blue.shade100)),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
