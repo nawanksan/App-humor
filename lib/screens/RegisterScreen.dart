@@ -24,7 +24,6 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
   String _emojiDescription = '';
   String _descricao = '';
   DateTime _data = DateTime.now();
-  String _id = DateTime.now().toIso8601String();
 
   final Map<String, String> _emojiDescriptions = {
     '😀': 'Feliz',
@@ -98,49 +97,6 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
       Navigator.pop(context, true);
     }
   }
-
-  //verificando o validator e adionando o novo humor
-  // void _submitForm() {
-  //   if (_formKey.currentState!.validate()) {
-  //     _formKey.currentState!.save();
-  //     addHumor(_id, _emojiDescription, _descricao, _data, _selectedEmoji!);
-  //     Navigator.pop(context);
-  //     // Voltar para a tela anterior após salvar
-  //     // Voltar para a tela anterior após salvar
-  //   }
-  // }
-
-  // void addHumor(String id, String emocao, String descricao, DateTime data,
-  //     String _selectedEmoji) async {
-  //   final newHumor = Humor(
-  //     id: id,
-  //     emocao: emocao,
-  //     descricao: descricao,
-  //     data: data,
-  //     icon: _selectedEmoji,
-  //   );
-
-  //   final prefs = await SharedPreferences.getInstance();
-
-  //   // Recupera a lista de humores existente
-  //   List<String>? humorListJson = prefs.getStringList('humores');
-  //   if (humorListJson == null) {
-  //     humorListJson = [];
-  //   }
-
-  //   // Adiciona o novo humor à lista
-  //   humorListJson.add(jsonEncode(newHumor.toJson()));
-
-  //   // Salva a lista atualizada no SharedPreferences
-  //   await prefs.setStringList('humores', humorListJson);
-
-  //   // Atualiza a data do último humor registrado
-  //   await verificarHumorDoDia();
-
-
-  //   // dados_Humor.add(newHumor);
-  //   verificarHumorDoDia();
-  // }
 
   //salvando a data do ultimo humor cadastrado
   Future<void> verificarHumorDoDia() async {

@@ -1,5 +1,5 @@
-import 'package:app_humor/data/provider.dart';
-import 'package:app_humor/model/humor.dart';
+// import 'package:app_humor/data/provider.dart';
+// import 'package:app_humor/model/humor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
