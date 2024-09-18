@@ -18,11 +18,13 @@ class Registerscreen extends ConsumerStatefulWidget {
 
 class _RegisterscreenState extends ConsumerState<Registerscreen> {
   final _formKey = GlobalKey<FormState>();
+  final _descricaoController = TextEditingController();
+
   DateTime? _selectedDate;
   String formattedDate = '';
   String? _selectedEmoji;
   String _emojiDescription = '';
-  String _descricao = '';
+  // String _descricao = '';
   DateTime _data = DateTime.now();
 
   final Map<String, String> _emojiDescriptions = {
@@ -88,7 +90,7 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
       final newHumor = Humor(
         id: DateTime.now().toIso8601String(),
         emocao: _emojiDescription,
-        descricao: _descricao,
+        descricao: _descricaoController.text,
         data: _data,
         icon: _selectedEmoji!,
       );
@@ -177,6 +179,7 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
                               height: 50,
                             ),
                             TextFormField(
+                              controller: _descricaoController,
                               cursorColor: Colors.blue,
                               decoration: InputDecoration(
                                 hintText: 'Descreva seu dia',
@@ -196,9 +199,9 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
                                 }
                                 return null;
                               },
-                              onSaved: (value) {
-                                _descricao = value!;
-                              },
+                              // onSaved: (value) {
+                              //   _descricao = value!;
+                              // },
                             ),
                             SizedBox(
                               height: 50,

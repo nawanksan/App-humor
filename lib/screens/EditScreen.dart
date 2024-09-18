@@ -18,11 +18,13 @@ class Editscreen extends ConsumerStatefulWidget {
 
 class _EditscreenState extends ConsumerState<Editscreen> {
   final _formKey = GlobalKey<FormState>();
+  final _descricaoController = TextEditingController();
+
   DateTime? _selectedDate;
   String formattedDate = '';
   String? _selectedEmoji;
   String _emojiDescription = '';
-  String _descricao = '';
+  // String _descricao = '';
   DateTime _data = DateTime.now();
 
   final Map<String, String> _emojiDescriptions = {
@@ -43,8 +45,7 @@ class _EditscreenState extends ConsumerState<Editscreen> {
   Future<void> _initializeDateFormatting() async {
     await initializeDateFormatting('pt_BR', null);
     setState(() {
-      formattedDate =
-          getFormattedDate(); // Atualiza a data formatada depois da inicialização
+      formattedDate = getFormattedDate(); // Atualiza a data formatada depois da inicialização
     });
   }
 
@@ -60,7 +61,7 @@ class _EditscreenState extends ConsumerState<Editscreen> {
     formattedDate = DateFormat('EEE d MMM', 'pt_BR').format(_selectedDate!);
     _selectedEmoji = widget.humor.icon;
     _emojiDescription = widget.humor.emocao;
-    _descricao = widget.humor.descricao;
+    _descricaoController.text = widget.humor.descricao;
     _data = widget.humor.data;
   }
 
@@ -101,7 +102,7 @@ class _EditscreenState extends ConsumerState<Editscreen> {
       final updateHumor = Humor(
         id: widget.humor.id, // Mantém o mesmo ID,
         emocao: _emojiDescription,
-        descricao: _descricao,
+        descricao: _descricaoController.text,
         data: _data,
         icon: _selectedEmoji!,
       );
@@ -187,7 +188,8 @@ class _EditscreenState extends ConsumerState<Editscreen> {
                               height: 50,
                             ),
                             TextFormField(
-                              initialValue: _descricao,
+                              // initialValue: _descricao,
+                              controller: _descricaoController,
                               cursorColor: Colors.blue,
                               decoration: InputDecoration(
                                 hintText: 'Descreva seu dia',
@@ -207,9 +209,9 @@ class _EditscreenState extends ConsumerState<Editscreen> {
                                 }
                                 return null;
                               },
-                              onSaved: (value) {
-                                _descricao = value!;
-                              },
+                              // onSaved: (value) {
+                              //   _descricao = value!;
+                              // },
                             ),
                             SizedBox(
                               height: 50,

@@ -16,6 +16,7 @@ class Homescreen extends ConsumerStatefulWidget {
 
 class _HomescreenState extends ConsumerState<Homescreen> {
   final hoje = DateTime.now();
+  Humor? _selectedHumor;
   
   @override
   void initState() {
@@ -60,6 +61,12 @@ class _HomescreenState extends ConsumerState<Homescreen> {
               width: 200,
               height: 250,
             ),
+            Center(child: Text('HERISSON')),
+            Image.asset(
+              'assets/herisson.jpg',
+              width: 200,
+              height: 250,
+            ),
           ],
         ),
       ),
@@ -67,8 +74,8 @@ class _HomescreenState extends ConsumerState<Homescreen> {
         title: const Text('Diário do humor'),
         backgroundColor: Colors.blue[50],
         actions: [
-          IconButton(
-            icon: Icon(Icons.delete_sweep),
+          if (_selectedHumor != null) IconButton(
+            icon: Icon(Icons.delete_outline_rounded),
             onPressed: () {
               showCupertinoDialog(
                 context: context,
@@ -120,7 +127,16 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                 },
               );
             },
-          )
+          ),
+          if (_selectedHumor != null )
+            IconButton(onPressed: (){
+              Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => Editscreen(humor: _selectedHumor!),
+                  ),
+                );
+            }, icon: Icon(Icons.edit))
+          
         ],
       ),
       body: ListView.builder(
@@ -128,18 +144,25 @@ class _HomescreenState extends ConsumerState<Homescreen> {
         itemBuilder: (context, index) {
           final humor = humores[index];
           return ListTile(
+            leading: Radio<Humor>(
+              value: humor,
+              groupValue: _selectedHumor,
+              onChanged: (Humor? value) {
+                setState(() {
+                  _selectedHumor = value;
+                });
+              },
+            ),
             title: Text(
               humor.icon + " " + humor.emocao,
               style: const TextStyle(fontSize: 25),
             ),
             subtitle: Text(humor.descricao),
-            trailing: Text(formatDate(humor.data) + " \nClique para editar"),
+            trailing: Text(formatDate(humor.data)),
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => Editscreen(humor: humor),
-                ),
-              );
+              setState(() {
+                _selectedHumor == humor ? _selectedHumor = null :  _selectedHumor = humor;// Atualiza o humor selecionado ao clicar
+              });
             },
 
             // Formata a data para exibição
