@@ -118,9 +118,11 @@ class _EditscreenState extends ConsumerState<Editscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
+        
         title: Text('Editar Humor'),
-        backgroundColor: Colors.blue[50],
+        backgroundColor: Colors.red[800],
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -217,7 +219,7 @@ class _EditscreenState extends ConsumerState<Editscreen> {
                                 child: Text(
                                   'Salvar',
                                   style: TextStyle(
-                                      fontSize: 25, color: Colors.blue[200]),
+                                      fontSize: 25, color: Colors.black),
                                 ))
                           ],
                         ),
