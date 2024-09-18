@@ -120,7 +120,6 @@ class _EditscreenState extends ConsumerState<Editscreen> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
-        
         title: Text('Editar Humor'),
         backgroundColor: Colors.red[800],
       ),
