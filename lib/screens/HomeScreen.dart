@@ -1,6 +1,7 @@
 import 'package:app_humor/data/provider.dart';
 import 'package:app_humor/model/humor.dart';
 import 'package:app_humor/screens/EditScreen.dart';
+import 'package:app_humor/screens/MainScreeen.dart';
 import 'package:app_humor/screens/RegisterScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class Homescreen extends ConsumerStatefulWidget {
 class _HomescreenState extends ConsumerState<Homescreen> {
   final hoje = DateTime.now();
   Humor? _selectedHumor;
-  
+
   @override
   void initState() {
     super.initState();
@@ -26,7 +27,11 @@ class _HomescreenState extends ConsumerState<Homescreen> {
     });
   }
 
-  void verificarCadastroHumorDia2(){
+  void verificarCadastroHumorDia2() async {
+     // Aguarda o carregamento dos humores
+    await ref.read(humorProvider.notifier).loadHumores();
+
+  // Faz a verificação após os dados serem carregados
     verificarCadastroHumorDia(hoje);
   }
 
@@ -51,7 +56,7 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.people_sharp),
-                  Text('Perfil'),
+                  Text('Perfiis'),
                 ],
               ),
             ),
@@ -74,69 +79,72 @@ class _HomescreenState extends ConsumerState<Homescreen> {
         title: const Text('Diário do humor'),
         backgroundColor: Colors.blue[50],
         actions: [
-          if (_selectedHumor != null) IconButton(
-            icon: Icon(Icons.delete_outline_rounded),
-            onPressed: () {
-              showCupertinoDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return CupertinoAlertDialog(
-                    title: const Text(
-                      'Aviso',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                    ),
-                    content: const Text(
-                      'Deseja apagar todos os humores cadastrados?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 17), // Centraliza o texto
-                    ),
-                    actions: <CupertinoDialogAction>[
-                      CupertinoDialogAction(
-                        onPressed: () {
-                          // Ação principal
-
-                          Navigator.of(context).pop();
-                        },
-                        // isDefaultAction: false,
-                        child: const Text(
-                          'Cancelar',
-                          style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20),
-                        ), // Destaca o botão principal
+          if (_selectedHumor != null)
+            IconButton(
+              icon: Icon(Icons.delete_outline_rounded),
+              onPressed: () {
+                showCupertinoDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return CupertinoAlertDialog(
+                      title: const Text(
+                        'Aviso',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 22),
                       ),
-                      CupertinoDialogAction(
-                        onPressed: () {
-                          // Ação principal
-                          limparTodoSharedPreferences();
-                          Navigator.of(context).pop();
-                        },
-                        // isDefaultAction: false,
-                        child: const Text(
-                          'OK',
-                          style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20),
-                        ), // Destaca o botão principal
+                      content: const Text(
+                        'Deseja apagar o humor cadastrado?',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 17), // Centraliza o texto
                       ),
-                    ],
+                      actions: <CupertinoDialogAction>[
+                        CupertinoDialogAction(
+                          onPressed: () {
+                            // Ação principal
+                            Navigator.of(context).pop();
+                          },
+                          // isDefaultAction: false,
+                          child: const Text(
+                            'Cancelar',
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
+                          ), // Destaca o botão principal
+                        ),
+                        CupertinoDialogAction(
+                          onPressed: () {
+                            // Ação principal
+                            _removerHumor(_selectedHumor!);
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => MainScreen(),
+                            ));
+                          },
+                          // isDefaultAction: false,
+                          child: const Text(
+                            'OK',
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
+                          ), // Destaca o botão principal
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+          if (_selectedHumor != null)
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => Editscreen(humor: _selectedHumor!),
+                    ),
                   );
                 },
-              );
-            },
-          ),
-          if (_selectedHumor != null )
-            IconButton(onPressed: (){
-              Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => Editscreen(humor: _selectedHumor!),
-                  ),
-                );
-            }, icon: Icon(Icons.edit))
-          
+                icon: Icon(Icons.edit))
         ],
       ),
       body: ListView.builder(
@@ -161,13 +169,15 @@ class _HomescreenState extends ConsumerState<Homescreen> {
             trailing: Text(formatDate(humor.data)),
             onTap: () {
               setState(() {
-                _selectedHumor == humor ? _selectedHumor = null :  _selectedHumor = humor;// Atualiza o humor selecionado ao clicar
+                _selectedHumor == humor
+                    ? _selectedHumor = null
+                    : _selectedHumor =
+                        humor; // Atualiza o humor selecionado ao clicar
               });
             },
 
             // Formata a data para exibição
           );
-          
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -191,38 +201,34 @@ class _HomescreenState extends ConsumerState<Homescreen> {
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
-  // void _navigateToAddHumor() async {
-  //   // Navega para a tela de adicionar humor e aguarda o retorno
-  //   final result = await Navigator.push(
-  //     context,
-  //     MaterialPageRoute(builder: (context) => const Registerscreen()),
-  //   );
-
-  //   // if (result == true) {
-  //   //   // Se o humor foi adicionado, atualize a lista
-  //   //   _refreshHumores();
-  //   // }
-  // }
-
   // Verifica se o humor foi cadastrado hoje
   Future<void> verificarCadastroHumorDia(DateTime data) async {
-  // Obtendo a lista de humores do humorProvider
-  final humores = ref.read(humorProvider);
+    // Obtendo a lista de humores do humorProvider
+    final humores = ref.read(humorProvider);
 
-  // Filtrando a lista de humores para encontrar um humor com a mesma data
-  final humorDoDia = humores.firstWhere(
-    (humor) =>
-        humor.data.day == data.day &&
-        humor.data.month == data.month &&
-        humor.data.year == data.year,
-    orElse: () => Humor(id: '', emocao: '', descricao: '', data: DateTime.now(), icon: ''), // Retorna um humor "vazio",
-  );
+    // Filtrando a lista de humores para encontrar um humor com a mesma data
+    // final humorDoDia = humores.firstWhere(
+    //   (humor) =>
+    //       humor.data.day == data.day &&
+    //       humor.data.month == data.month &&
+    //       humor.data.year == data.year,
+    //   orElse: () => null, // Retorna um humor "vazio",
+    // );
+    // final humores = ref.read(humorProvider);
 
-  // Se não encontrar nenhum humor com a data especificada, mostrar o alerta
-  if (humorDoDia.id.isEmpty) {
-    mostrarAlertaCadastrarHumor();
+    final humorDoDia = humores.where((humor) =>
+      humor.data.day == data.day &&
+      humor.data.month == data.month &&
+      humor.data.year == data.year,
+    ).toList();
+    
+
+    // Se não encontrar nenhum humor com a data especificada, mostrar o alerta
+    if (humorDoDia.isEmpty) {
+      mostrarAlertaCadastrarHumor();
+    }
   }
-}
+
   void mostrarAlertaCadastrarHumor() {
     showCupertinoDialog(
       context: context,
@@ -256,5 +262,10 @@ class _HomescreenState extends ConsumerState<Homescreen> {
         );
       },
     );
+  }
+
+  void _removerHumor(Humor humor) async {
+    final provider = ref.read(humorProvider.notifier);
+    provider.removeHumor(humor);
   }
 }

@@ -38,6 +38,12 @@ class HumorNotifier extends StateNotifier<List<Humor>> {
     // Notifica o estado para atualizar a tela
   }
 
+  //remover um humor especificada
+  void removeHumor(Humor humor) async {
+    state = state.where((h) => h.id != humor.id).toList();// Remove o humor da lista
+    await _saveHumores(); // Atualiza os dados armazenados no SharedPreferences
+  }
+
   //carrega os humores armazenados no SharedPreferences ao iniciar o aplicativo e cria uma nova instancia 
   //de humor ao chamar o fromJson
   Future<void> _loadHumores() async {
@@ -48,6 +54,10 @@ class HumorNotifier extends StateNotifier<List<Humor>> {
       return Humor.fromJson(jsonDecode(jsonString));
     }).toList();
   }
+
+   Future<void> loadHumores() async {
+    await _loadHumores();
+  }
   
   //Essa função salva a lista atual de humores no SharedPreferences
   Future<void> _saveHumores() async {
@@ -57,11 +67,13 @@ class HumorNotifier extends StateNotifier<List<Humor>> {
   }
 
   // Função para atualizar um humor
-  void updateHumor(Humor updatedHumor) {
+  void updateHumor(Humor updatedHumor) async{
     state = [
       for (final humor in state)
         if (humor.id == updatedHumor.id) updatedHumor else humor,
     ];
+    // Salva a lista atualizada no SharedPreferences
+     await _saveHumores();
   }
 
 }

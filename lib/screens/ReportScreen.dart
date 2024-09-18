@@ -33,10 +33,6 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          //   const Text(
-          //     'Relatório de Humores (Gráfico de Barras)',
-          //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          //   ),
             const SizedBox(height: 20),
             Expanded(
               child: BarChart(
@@ -62,7 +58,7 @@ class _ReportscreenState extends ConsumerState<Reportscreen> {
                       ),
                     ),
                     leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
+                      sideTitles: SideTitles(showTitles: true),
                     ),
                     rightTitles: AxisTitles(
                       sideTitles: SideTitles(showTitles: false),

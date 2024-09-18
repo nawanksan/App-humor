@@ -1,6 +1,6 @@
-
 import 'package:app_humor/data/provider.dart';
 import 'package:app_humor/model/humor.dart';
+import 'package:app_humor/screens/MainScreeen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 class Editscreen extends ConsumerStatefulWidget {
-  final Humor humor; 
+  final Humor humor;
   Editscreen({Key? key, required this.humor}) : super(key: key);
 
   @override
@@ -38,14 +38,15 @@ class _EditscreenState extends ConsumerState<Editscreen> {
   void initState() {
     super.initState();
     _initializeDateFormatting();
-     _loadHumorData();// Carrega os dados do humor que está sendo editado
+    _loadHumorData(); // Carrega os dados do humor que está sendo editado
   }
 
   // Inicializa a formatação de data para 'pt_BR'
   Future<void> _initializeDateFormatting() async {
     await initializeDateFormatting('pt_BR', null);
     setState(() {
-      formattedDate = getFormattedDate(); // Atualiza a data formatada depois da inicialização
+      formattedDate =
+          getFormattedDate(); // Atualiza a data formatada depois da inicialização
     });
   }
 
@@ -94,7 +95,7 @@ class _EditscreenState extends ConsumerState<Editscreen> {
   }
 
   //verificando o validator e adionando o novo humor
-   void _submitForm() {
+  void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
@@ -106,18 +107,13 @@ class _EditscreenState extends ConsumerState<Editscreen> {
         data: _data,
         icon: _selectedEmoji!,
       );
-
-      // verificarHumorDoDia();
+      print('feito o update');
       ref.read(humorProvider.notifier).updateHumor(updateHumor);
-      Navigator.pop(context);
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => MainScreen(),
+      ));
     }
   }
-
-  //salvando a data do ultimo humor cadastrado
-  // Future<void> verificarHumorDoDia() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   await prefs.setString('ultimo_cadastro', '${_data.day}-${_data.month}-${_data.year}');
-  // }
 
   @override
   Widget build(BuildContext context) {
