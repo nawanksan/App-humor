@@ -35,28 +35,31 @@ class _HomescreenState extends ConsumerState<Homescreen> {
     verificarCadastroHumorDia(hoje);
   }
 
-  Future<void> limparTodoSharedPreferences() async {
-    ref.read(humorProvider.notifier).clearAllHumores();
-  }
+  // Future<void> limparTodoSharedPreferences() async {
+  //   ref.read(humorProvider.notifier).clearAllHumores();
+  // }
 
   @override
   Widget build(BuildContext context) {
     final humores = ref.watch(humorProvider);
 
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       drawer: Drawer(
+        backgroundColor: Colors.grey[300],
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue.shade100,
+                color: Colors.red[800],
+                
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.people_sharp),
-                  Text('Perfiis'),
+                  Icon(Icons.people_sharp,size: 50,),
+                  Text('Perfil',style: TextStyle(color: Colors.white, fontSize: 20),),
                 ],
               ),
             ),
@@ -66,22 +69,17 @@ class _HomescreenState extends ConsumerState<Homescreen> {
               width: 200,
               height: 250,
             ),
-            Center(child: Text('HERISSON')),
-            Image.asset(
-              'assets/herisson.jpg',
-              width: 200,
-              height: 250,
-            ),
           ],
         ),
       ),
       appBar: AppBar(
-        title: const Text('Diário do humor'),
-        backgroundColor: Colors.blue[50],
+        title: const Text('Diário do humor',style: TextStyle(color: Colors.white),),
+        
+        backgroundColor: Color(0xFFB71C1C),
         actions: [
           if (_selectedHumor != null)
             IconButton(
-              icon: Icon(Icons.delete_outline_rounded),
+              icon: Icon(Icons.delete_outline_rounded, color: Colors.white,),
               onPressed: () {
                 showCupertinoDialog(
                   context: context,
@@ -144,7 +142,7 @@ class _HomescreenState extends ConsumerState<Homescreen> {
                     ),
                   );
                 },
-                icon: Icon(Icons.edit))
+                icon: Icon(Icons.edit, color: Colors.white))
         ],
       ),
       body: ListView.builder(
@@ -189,9 +187,10 @@ class _HomescreenState extends ConsumerState<Homescreen> {
         },
         child: Icon(
           Icons.add,
-          color: Colors.black,
+          color: Colors.grey[300],
         ),
-        backgroundColor: Colors.blue[50],
+        backgroundColor: Colors.red[800],
+        
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
@@ -205,16 +204,6 @@ class _HomescreenState extends ConsumerState<Homescreen> {
   Future<void> verificarCadastroHumorDia(DateTime data) async {
     // Obtendo a lista de humores do humorProvider
     final humores = ref.read(humorProvider);
-
-    // Filtrando a lista de humores para encontrar um humor com a mesma data
-    // final humorDoDia = humores.firstWhere(
-    //   (humor) =>
-    //       humor.data.day == data.day &&
-    //       humor.data.month == data.month &&
-    //       humor.data.year == data.year,
-    //   orElse: () => null, // Retorna um humor "vazio",
-    // );
-    // final humores = ref.read(humorProvider);
 
     final humorDoDia = humores.where((humor) =>
       humor.data.day == data.day &&

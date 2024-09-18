@@ -11,7 +11,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int selectedIndex = 0;
-
+  int _currentIndex = 0;
+  final PageController _pageController = PageController();
   // Lista de telas que serão chamadas ao selecionar o item no BottomNavigationBar
   List<Widget> _widgetOptions = <Widget>[
     const Homescreen(),
@@ -24,6 +25,12 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  void _onPageChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,13 +41,15 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.home, size: 35,), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.auto_graph_outlined, size: 35,), label: ''),
         ],
+        
         currentIndex: selectedIndex,
         selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.black,
+        unselectedItemColor: Colors.grey[700],
         onTap: onitemSelected,
         showSelectedLabels: false,
         showUnselectedLabels: false,
-        backgroundColor: Colors.blue[900],
+        backgroundColor: Color(0xFFB71C1C),
+        type: BottomNavigationBarType.fixed,
        
       ),
     );

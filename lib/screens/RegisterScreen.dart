@@ -29,7 +29,7 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
 
   final Map<String, String> _emojiDescriptions = {
     '😀': 'Feliz',
-    '😪': 'pensativo',
+    '😪': 'Pensativo',
     '😔': 'Triste',
     '😠': 'Raiva'
   };
@@ -109,9 +109,10 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
-        title: Text('Cadastrar Novo Humor'),
-        backgroundColor: Colors.blue[50],
+        title: Text('Cadastrar Novo Humor',style: TextStyle(color: Colors.white),),
+        backgroundColor: Colors.red[800],
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -165,13 +166,13 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
                                 children: [
                                   Text(
                                     'Emoji selecionado: $_selectedEmoji',
-                                    style: TextStyle(fontSize: 20),
+                                    style: TextStyle(fontSize: 20,color: Colors.black),
                                   ),
                                   Text(
                                     'Descrição: $_emojiDescription',
                                     style: TextStyle(
                                         fontSize: 20,
-                                        fontStyle: FontStyle.italic),
+                                        fontStyle: FontStyle.italic,color: Colors.black),
                                   ),
                                 ],
                               ),
@@ -211,7 +212,7 @@ class _RegisterscreenState extends ConsumerState<Registerscreen> {
                                 child: Text(
                                   'Salvar',
                                   style: TextStyle(
-                                      fontSize: 25, color: Colors.blue[200]),
+                                      fontSize: 25, color: Colors.black),
                                 ))
                           ],
                         ),
