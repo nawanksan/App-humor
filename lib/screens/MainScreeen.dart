@@ -11,8 +11,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int selectedIndex = 0;
-  int _currentIndex = 0;
-  final PageController _pageController = PageController();
   // Lista de telas que serão chamadas ao selecionar o item no BottomNavigationBar
   List<Widget> _widgetOptions = <Widget>[
     const Homescreen(),
@@ -22,12 +20,6 @@ class _MainScreenState extends State<MainScreen> {
   void onitemSelected(int index) {
     setState(() {
       selectedIndex = index;
-    });
-  }
-
-  void _onPageChanged(int index) {
-    setState(() {
-      _currentIndex = index;
     });
   }
   
