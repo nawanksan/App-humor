@@ -29,7 +29,7 @@ class _EditscreenState extends ConsumerState<Editscreen> {
 
   final Map<String, String> _emojiDescriptions = {
     '😀': 'Feliz',
-    '😪': 'pensativo',
+    '😪': 'Pensativo',
     '😔': 'Triste',
     '😠': 'Raiva'
   };
