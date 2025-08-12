@@ -1,16 +1,47 @@
-# app_humor
+# 😄 Humor App — Registro Diário de Emoções
 
-A new Flutter project.
+O **Humor App** é um aplicativo desenvolvido em **Flutter** para ajudar você a registrar e acompanhar seu humor ao longo dos dias.  
+A proposta é simples: escolher como você está se sentindo, registrar, visualizar no histórico e acompanhar a evolução das suas emoções.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## ✨ Funcionalidades
 
-A few resources to get you started if this is your first Flutter project:
+- 😊 **Registro de Humor:** Escolha entre diferentes estados emocionais.
+- 📜 **Histórico de Registros:** Veja como seu humor mudou com o tempo.
+- 📊 **Gráficos e Estatísticas:** Acompanhe seu bem-estar por meio de gráficos (via `fl_chart`).
+- 🖼 **Interface Simples e Intuitiva:** Foco na facilidade de uso.
+- 💾 **Armazenamento Local:** Dados salvos com `SharedPreferences` para acesso rápido.
+- 🔄 **Atualização Manual:** Puxe a tela para atualizar os registros.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🛠️ Tecnologias Utilizadas
+
+- **Flutter** — Desenvolvimento multiplataforma
+- **Dart** — Linguagem de programação
+- **Riverpod** — Gerenciamento de estado
+- **SharedPreferences** — Armazenamento local de dados
+- **fl_chart** — Visualização gráfica
+- **DateTime ISO 8601** — Registro padronizado das datas
+
+---
+
+## 📦 Instalação e Uso
+
+### 1️⃣ Clonar o repositório
+```bash
+git clone https://github.com/seu-usuario/humor-app.git
+cd humor-app
+```
+### 2️⃣ Instalar dependências
+```bash
+flutter pub get
+```
+## 3️⃣ Executar o APP
+```bash
+flutter run
+```
+## 📄 Licença
+Este projeto foi criado para estudos e uso pessoal.
+Contribuições são bem-vindas! 🎯
