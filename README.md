@@ -4,11 +4,13 @@ O **Humor App** é um aplicativo desenvolvido em **Flutter** para ajudar você a
 A proposta é simples: escolher como você está se sentindo, registrar, visualizar no histórico e acompanhar a evolução das suas emoções.
 
 ---
+É necessário ter o Flutter SDK instalado e configurado.
+Instalação: https://flutter.dev/docs/get-started/install
+---
 
 ## ✨ Funcionalidades
 
 - 😊 **Registro de Humor:** Escolha entre diferentes estados emocionais.
-- 📜 **Histórico de Registros:** Veja como seu humor mudou com o tempo.
 - 📊 **Gráficos e Estatísticas:** Acompanhe seu bem-estar por meio de gráficos (via `fl_chart`).
 - 🖼 **Interface Simples e Intuitiva:** Foco na facilidade de uso.
 - 💾 **Armazenamento Local:** Dados salvos com `SharedPreferences` para acesso rápido.
